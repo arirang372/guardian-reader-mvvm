@@ -2,5 +2,8 @@
     <string name="app_name">GuardianReaderMvvm</string>
 
     <string name="loading_sections">Loading sections ...</string>
-    <string name="sections_list">Sections list</string>
+    <string name="contents_list">Contents list</string>
+
+    <string name="section_list">Section list</string>
+    <string name="cd_comments_list">Comments list</string>
 </resources>

@@ -4,7 +4,6 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.support.annotation.Nullable;
 import com.john.guardian.GuardianApplication;
@@ -27,13 +26,13 @@ public class SectionListViewModel extends AndroidViewModel
 
         observableSections.addSource(repository.loadAllSections(), new Observer<List<GuardianSection>>() {
             @Override
-            public void onChanged(@Nullable List<GuardianSection> sections) {
+            public void onChanged(@Nullable List<GuardianSection> sections)
+            {
                 observableSections.setValue(sections);
             }
         });
-
-       // observableSections = repository.loadAllSections();
     }
+
 
     public LiveData<List<GuardianSection>> getSections()
     {

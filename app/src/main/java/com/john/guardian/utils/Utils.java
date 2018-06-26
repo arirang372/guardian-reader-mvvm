@@ -27,6 +27,7 @@ public class Utils
 
     }
 
+
     public String reformatDate(String date)
     {
         date = date.replace("T", " ");

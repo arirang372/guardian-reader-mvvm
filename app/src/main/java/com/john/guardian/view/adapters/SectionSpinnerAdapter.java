@@ -1,7 +1,6 @@
 package com.john.guardian.view.adapters;
 
 import android.databinding.DataBindingUtil;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,20 +8,16 @@ import android.widget.BaseAdapter;
 import com.john.guardian.R;
 import com.john.guardian.databinding.SectionSpinnerItemBinding;
 import com.john.guardian.db.entity.GuardianSection;
-import com.john.guardian.view.callbacks.SectionClickCallback;
 import java.util.List;
 
 
 public class SectionSpinnerAdapter extends BaseAdapter
 {
-    @Nullable
-    private SectionClickCallback callback;
     private SectionSpinnerItemBinding binding;
     private List<? extends GuardianSection> sections;
 
-    public SectionSpinnerAdapter( @Nullable SectionClickCallback callback)
+    public SectionSpinnerAdapter()
     {
-        this.callback = callback;
     }
 
     public void setSections(final List<? extends GuardianSection> sections)
@@ -63,8 +58,8 @@ public class SectionSpinnerAdapter extends BaseAdapter
         SectionViewHolder holder = new SectionViewHolder(binding);
         v.setTag(holder);
         holder.binding.setSection(sections.get(position));
-        holder.binding.setCallback(callback);
         holder.binding.executePendingBindings();
+
 
         return v;
     }

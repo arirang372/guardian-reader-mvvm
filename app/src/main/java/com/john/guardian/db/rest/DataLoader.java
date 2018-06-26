@@ -1,10 +1,7 @@
 package com.john.guardian.db.rest;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.persistence.room.TypeConverters;
-import android.os.Looper;
-
 import com.john.guardian.db.AppDatabase;
 import com.john.guardian.db.converter.DateConverter;
 import com.john.guardian.db.entity.GuardianContent;
@@ -14,19 +11,14 @@ import com.john.guardian.db.rest.models.contents.HttpContentResponse;
 import com.john.guardian.db.rest.models.sections.GuardianSectionResponse;
 import com.john.guardian.db.rest.models.sections.HttpSectionResponse;
 import com.john.guardian.utils.Utils;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Handler;
-
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.BehaviorSubject;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -89,13 +81,13 @@ public class DataLoader
                         LOGD(TAG, "Success - Section received ...");
                         sections.setValue(guardianSections);
 
-//                        new Thread(new Runnable() {
-//                            @Override
-//                            public void run()
-//                            {
-                               // processNewsSections(guardianSections);
-//                            }
-//                        }).start();
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run()
+                            {
+                                processNewsSections(guardianSections);
+                            }
+                        }).start();
                     }
 
                     @Override
@@ -121,13 +113,16 @@ public class DataLoader
     }
 
 
-    public void loadNewsContents(String sectionId, String apiKey, BehaviorSubject<Boolean> networkLoading)
+    public  MutableLiveData<List<GuardianContent>> loadNewsContents(String sectionId, String apiKey)
     {
         this.apiKey = apiKey;
-        loadNextContents(sectionId);
+        final MutableLiveData<List<GuardianContent>> contents = new MutableLiveData<>();
+        loadNextContents(sectionId, contents);
+
+        return contents;
     }
 
-    private void loadNextContents(final String sectionId)
+    private void loadNextContents(final String sectionId, MutableLiveData<List<GuardianContent>> contents)
     {
         service.getNewsContents(sectionId, apiKey)
                 .subscribeOn(Schedulers.io())
@@ -157,7 +152,16 @@ public class DataLoader
                     @Override
                     public void onNext(List<GuardianContent> guardianContents) {
                         LOGD(TAG, String.format("Success - Data received : %s", sectionId) );
-                       processNewsContents( guardianContents);
+
+                        contents.setValue(guardianContents);
+
+                        new Thread(new Runnable()
+                        {
+                            @Override
+                            public void run() {
+                                processNewsContents( guardianContents);
+                            }
+                        }).start();
                     }
 
                     @Override

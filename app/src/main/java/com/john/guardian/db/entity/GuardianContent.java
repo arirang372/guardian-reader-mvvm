@@ -8,6 +8,8 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.john.guardian.model.IGuardianContent;
 
+import java.io.Serializable;
+
 import io.reactivex.annotations.NonNull;
 
 /**
@@ -20,7 +22,7 @@ import io.reactivex.annotations.NonNull;
                         childColumns = "sectionId",
                         onDelete = ForeignKey.CASCADE) },
           indices = {@Index(value = "sectionId")})
-public class GuardianContent implements IGuardianContent
+public class GuardianContent implements IGuardianContent, Serializable
 {
     @PrimaryKey
     @SerializedName("primary_id")

@@ -8,6 +8,7 @@
             name="isLoading"
             type="boolean" />
     </data>
+
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -28,8 +29,7 @@
                 <Spinner
                     android:id="@+id/sp_sections"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                  />
+                    android:layout_height="wrap_content" />
 
             </android.support.v7.widget.Toolbar>
 
@@ -48,9 +48,10 @@
         </android.support.design.widget.AppBarLayout>
 
         <FrameLayout    android:id="@+id/fragment_container"
+                        android:layout_marginTop="70dp"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="vertical"/>
+                        android:orientation="vertical" />
 
     </android.support.design.widget.CoordinatorLayout>
 

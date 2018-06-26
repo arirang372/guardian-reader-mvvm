@@ -3,7 +3,6 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-
         <LinearLayout
             android:id="@+id/viewMain"
             android:layout_width="match_parent"
@@ -16,16 +15,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical|center_horizontal"
-                android:text="@string/loading_sections"
-            />
+                android:text="@string/loading_sections" />
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/products_list"
-                android:contentDescription="@string/sections_list"
+                android:id="@+id/content_list"
+                android:contentDescription="@string/contents_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:layoutManager="LinearLayoutManager"
-              />
+                app:layoutManager="LinearLayoutManager" />
 
         </LinearLayout>
 

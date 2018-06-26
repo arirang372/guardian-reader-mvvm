@@ -6,6 +6,7 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
+import android.databinding.ObservableField;
 
 import com.john.guardian.db.entity.GuardianContent;
 
@@ -16,6 +17,9 @@ public interface GuardianContentDao
 {
     @Query("SELECT * FROM contents where sectionId = :sectionId")
     LiveData<List<GuardianContent>> loadContents(String sectionId);
+
+    @Query("SELECT * FROM contents where id = :contentId")
+    LiveData<GuardianContent> loadContent(int contentId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<GuardianContent> contents);

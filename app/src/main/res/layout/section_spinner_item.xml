@@ -3,13 +3,11 @@
     <data>
         <variable name="section"
             type="com.john.guardian.db.entity.GuardianSection"/>
-        <variable name="callback"
-            type="com.john.guardian.view.callbacks.SectionClickCallback"/>
+
     </data>
 
     <TextView
         android:id="@+id/txtSectionName"
-        android:onClick="@{() ->  callback.onClick(section)}"
         android:text="@{section.sectionName}"
         android:textColor="@color/color_white"
         android:layout_width="match_parent"

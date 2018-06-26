@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
+import android.databinding.ObservableField;
 import android.support.annotation.Nullable;
 import com.john.guardian.db.entity.GuardianContent;
 import com.john.guardian.db.entity.GuardianSection;
@@ -58,6 +59,11 @@ public class DataRepository
         return dataLoader.loadNewsSections("b71a5ddb-e819-4864-8006-944f614834b3");
     }
 
+    public LiveData<List<GuardianContent>> loadAllContents(String sectionId)
+    {
+        return dataLoader.loadNewsContents(sectionId, "b71a5ddb-e819-4864-8006-944f614834b3");
+    }
+
     public LiveData<GuardianSection> loadSection(final String sectionId)
     {
         return database.sectionDao().loadSection(sectionId);
@@ -66,6 +72,11 @@ public class DataRepository
     public LiveData<List<GuardianContent>> loadContents(final String sectionId)
     {
         return database.contentDao().loadContents(sectionId);
+    }
+
+    public LiveData<GuardianContent> getContent(final int id)
+    {
+        return database.contentDao().loadContent(id);
     }
 
     public void insertContent(final GuardianContent newContent)

@@ -2,6 +2,8 @@ package com.john.guardian.view.ui;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -10,14 +12,18 @@ import android.view.View;
 import android.widget.AdapterView;
 import com.john.guardian.R;
 import com.john.guardian.databinding.ActivityMainBinding;
+import com.john.guardian.db.entity.GuardianContent;
 import com.john.guardian.db.entity.GuardianSection;
+import com.john.guardian.utils.Utils;
 import com.john.guardian.view.adapters.SectionSpinnerAdapter;
-import com.john.guardian.view.callbacks.SectionClickCallback;
 import com.john.guardian.viewmodel.SectionListViewModel;
 import java.util.List;
 
+
 public class MainActivity extends AppCompatActivity
-{    ActivityMainBinding binding;
+{
+
+    ActivityMainBinding binding;
 
     private SectionListViewModel sectionListViewModel;
     private SectionSpinnerAdapter sectionSpinnerAdapter;
@@ -38,10 +44,6 @@ public class MainActivity extends AppCompatActivity
 
         setupToolBar();
         subscribeUi(sectionListViewModel);
-        if(savedInstanceState == null)
-        {
-
-        }
     }
 
     private void subscribeUi(SectionListViewModel viewModel) {
@@ -66,32 +68,61 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private SectionClickCallback sectionClickCallback = new SectionClickCallback() {
-
-        @Override
-        public void onClick(GuardianSection section)
-        {
-
-        }
-    };
-
     public void setupToolBar()
     {
-        sectionSpinnerAdapter = new SectionSpinnerAdapter(sectionClickCallback);
+        sectionSpinnerAdapter = new SectionSpinnerAdapter();
         binding.spSections.setAdapter(sectionSpinnerAdapter);
-        binding.spSections.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        binding.spSections.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
             {
-                //presenter.titleSpinnerSelectionSelected(sections.get(position));
+                GuardianSection section = (GuardianSection) sectionSpinnerAdapter.getItem(position);
+                if(section != null)
+                {
+                    showContents(section);
+                }
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            public void onNothingSelected(AdapterView<?> parent)
+            {
 
             }
         });
     }
 
+
+    public void showContents(GuardianSection section)
+    {
+        ContentListFragment contentListFragment = ContentListFragment.newInstance(section.getSectionName());
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container,
+                        contentListFragment, null).commit();
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        DialogInterface.OnClickListener positiveListener = new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                dialog.dismiss();
+                finish();
+            }
+        };
+
+        Utils.createYesNoDialog(this, "Confirm", "Exit the application?","Yes", "No",positiveListener);
+    }
+
+    public void showGuardianContent(int contentId)
+    {
+        Intent intent = new Intent(this, NewsContentActivity.class);
+        intent.putExtra("content_id", contentId);
+        startActivity(intent);
+    }
 
 }
