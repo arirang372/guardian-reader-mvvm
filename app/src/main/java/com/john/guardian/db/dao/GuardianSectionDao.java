@@ -18,6 +18,9 @@ public interface GuardianSectionDao
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<GuardianSection> sections);
 
+    @Query("select * from sections")
+    List<GuardianSection> getAllSections();
+
     @Query("select * from sections where id = :sectionId")
     LiveData<GuardianSection> loadSection(String sectionId);
 

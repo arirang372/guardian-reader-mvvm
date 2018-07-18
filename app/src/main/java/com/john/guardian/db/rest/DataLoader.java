@@ -1,7 +1,12 @@
 package com.john.guardian.db.rest;
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.persistence.room.TypeConverters;
+import android.databinding.ObservableField;
+import android.os.Handler;
+import android.os.Looper;
+
 import com.john.guardian.db.AppDatabase;
 import com.john.guardian.db.converter.DateConverter;
 import com.john.guardian.db.entity.GuardianContent;
@@ -11,13 +16,26 @@ import com.john.guardian.db.rest.models.contents.HttpContentResponse;
 import com.john.guardian.db.rest.models.sections.GuardianSectionResponse;
 import com.john.guardian.db.rest.models.sections.HttpSectionResponse;
 import com.john.guardian.utils.Utils;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.operators.observable.ObservableFromCallable;
+import io.reactivex.internal.operators.observable.ObservableFromIterable;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -69,6 +87,13 @@ public class DataLoader
                         return Observable.just(guardianSectionResponse.results);
                     }
                 })
+                .map(new Function<List<GuardianSection>, List<GuardianSection>>()
+                {
+                    @Override
+                    public List<GuardianSection> apply(List<GuardianSection> sections) throws Exception {
+                        return processNewsSections(sections);
+                    }
+                })
                 .subscribe(new Observer<List<GuardianSection>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -104,12 +129,33 @@ public class DataLoader
         return sections;
     }
 
-    private void processNewsSections(final List<GuardianSection> sections)
+    private List<GuardianSection> processNewsSections(final List<GuardianSection> sections)
     {
         if(sections.isEmpty())
-            return;
+            return new ArrayList<>();
 
-        database.sectionDao().insertAll(sections);
+        try
+        {
+            Callable<List<GuardianSection>> callable = new Callable<List<GuardianSection>>()
+            {
+                @Override
+                public List<GuardianSection> call() throws Exception
+                {
+                    database.sectionDao().insertAll(sections);
+                    return database.sectionDao().getAllSections();
+                }
+            };
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Future<List<GuardianSection>> result = executor.submit(callable);
+
+            return result.get();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        return new ArrayList<>();
     }
 
 
@@ -122,25 +168,31 @@ public class DataLoader
         return contents;
     }
 
-    private void loadNextContents(final String sectionId, MutableLiveData<List<GuardianContent>> contents)
+
+    @SuppressLint("CheckResult")
+    private void loadNextContents(final String sectionId, MutableLiveData<List<GuardianContent>> observableContents)
     {
         service.getNewsContents(sectionId, apiKey)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(new Function<HttpContentResponse, GuardianContentResponse>()
-                {
+                .map(new Function<HttpContentResponse, GuardianContentResponse>() {
                     @Override
-                    public GuardianContentResponse apply(HttpContentResponse httpContentResponse)
-                    {
+                    public GuardianContentResponse apply(HttpContentResponse httpContentResponse) {
                         return httpContentResponse.response;
                     }
                 })
-                .flatMap(new Function<GuardianContentResponse, Observable<List<GuardianContent>>>()
+                .flatMap(new Function<GuardianContentResponse, Observable<List<GuardianContent>>>() {
+                    @Override
+                    public Observable<List<GuardianContent>> apply(GuardianContentResponse guardianContentResponse) {
+                        return Observable.just(guardianContentResponse.results);
+                    }
+                })
+                .map(new Function<List<GuardianContent>, List<GuardianContent>>()
                 {
                     @Override
-                    public Observable<List<GuardianContent>> apply(GuardianContentResponse guardianContentResponse)
+                    public List<GuardianContent> apply(List<GuardianContent> contents) throws Exception
                     {
-                        return Observable.just(guardianContentResponse.results);
+                        return processNewsContents(sectionId, contents);
                     }
                 })
                 .subscribe(new Observer<List<GuardianContent>>() {
@@ -151,17 +203,8 @@ public class DataLoader
 
                     @Override
                     public void onNext(List<GuardianContent> guardianContents) {
-                        LOGD(TAG, String.format("Success - Data received : %s", sectionId) );
-
-                        contents.setValue(guardianContents);
-
-                        new Thread(new Runnable()
-                        {
-                            @Override
-                            public void run() {
-                                processNewsContents( guardianContents);
-                            }
-                        }).start();
+                        LOGD(TAG, String.format("Success - Data received : %s", sectionId));
+                        observableContents.setValue(guardianContents);
                     }
 
                     @Override
@@ -169,23 +212,45 @@ public class DataLoader
                     }
 
                     @Override
-                    public void onComplete() {
+                    public void onComplete()
+                    {
 
                     }
                 });
     }
 
 
-    private void processNewsContents( final List<GuardianContent> contents)
+    private List<GuardianContent> processNewsContents(final String sectionId,  final List<GuardianContent> contents)
     {
         if(contents.isEmpty())
-            return;
+           return new ArrayList<>();
 
-        for(GuardianContent c : contents)
+        try
         {
-            c.setWebPublicationDate( utils.reformatDate(c.getWebPublicationDate()) );
+            for(GuardianContent c : contents)
+            {
+                c.setWebPublicationDate( utils.reformatDate(c.getWebPublicationDate()) );
+            }
+
+            Callable<List<GuardianContent>> callable = new Callable<List<GuardianContent>>()
+            {
+                @Override
+                public List<GuardianContent> call() throws Exception
+                {
+                    database.contentDao().insertAll(contents);
+                    return database.contentDao().getAllContents(sectionId);
+                }
+            };
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Future<List<GuardianContent>> result = executor.submit(callable);
+
+            return result.get();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
 
-        database.contentDao().insertAll(contents);
+        return new ArrayList<>();
     }
 }

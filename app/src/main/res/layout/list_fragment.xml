@@ -2,6 +2,11 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
+        <data>
+            <variable
+                name="isLoadingBarOn"
+                type="boolean" />
+        </data>
 
         <LinearLayout
             android:id="@+id/viewMain"
@@ -15,14 +20,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical|center_horizontal"
-                android:text="@string/loading_sections" />
+                android:text="@string/loading_sections"
+                app:visibleGone="@{isLoadingBarOn}"/>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/content_list"
-                android:contentDescription="@string/contents_list"
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/refresh_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layoutManager="LinearLayoutManager" />
+                android:layout_height="match_parent">
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/content_list"
+                        android:contentDescription="@string/contents_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:layoutManager="LinearLayoutManager"
+                        app:visibleGone="@{!isLoadingBarOn}"/>
+
+            </android.support.v4.widget.SwipeRefreshLayout>
 
         </LinearLayout>
 

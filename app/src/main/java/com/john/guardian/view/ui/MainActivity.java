@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import com.john.guardian.R;
 import com.john.guardian.databinding.ActivityMainBinding;
-import com.john.guardian.db.entity.GuardianContent;
 import com.john.guardian.db.entity.GuardianSection;
 import com.john.guardian.utils.Utils;
 import com.john.guardian.view.adapters.SectionSpinnerAdapter;
@@ -22,12 +21,10 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity
 {
-
     ActivityMainBinding binding;
 
     private SectionListViewModel sectionListViewModel;
     private SectionSpinnerAdapter sectionSpinnerAdapter;
-    private me.zhanghai.android.materialprogressbar.MaterialProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -40,7 +37,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(binding.toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        progressBar = binding.getRoot().findViewById(R.id.progressbar);
+        //progressBar = binding.getRoot().findViewById(R.id.progressbar);
 
         setupToolBar();
         subscribeUi(sectionListViewModel);
@@ -54,13 +51,13 @@ public class MainActivity extends AppCompatActivity
             {
                 if (sections != null)
                 {
-                    binding.setIsLoading(false);
-                    progressBar.setVisibility(View.INVISIBLE);
+                    binding.setIsLoadingHappening(false);
+                   // progressBar.setVisibility(View.INVISIBLE);
                     sectionSpinnerAdapter.setSections(sections);
                 }
                 else {
-                    binding.setIsLoading(true);
-                    progressBar.setVisibility(View.VISIBLE);
+                    binding.setIsLoadingHappening(true);
+                    //progressBar.setVisibility(View.VISIBLE);
                 }
 
                 binding.executePendingBindings();
@@ -96,10 +93,9 @@ public class MainActivity extends AppCompatActivity
     public void showContents(GuardianSection section)
     {
         ContentListFragment contentListFragment = ContentListFragment.newInstance(section.getSectionName());
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container,
-                        contentListFragment, null).commit();
+        getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.fragment_container, contentListFragment, null)
+                                    .commit();
     }
 
     @Override

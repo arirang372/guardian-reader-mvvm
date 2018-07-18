@@ -6,7 +6,7 @@ public interface IGuardianContent
     String getResourceName();
     String getType();
     String getSectionId();
-    String getSectionName();
+    String getSectionNameChild();
     String getWebPublicationDate();
     String getWebTitle();
     String getWebUrl();

@@ -3,14 +3,21 @@ package com.john.guardian.db;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Observer;
-import android.databinding.ObservableField;
 import android.support.annotation.Nullable;
 import com.john.guardian.db.entity.GuardianContent;
 import com.john.guardian.db.entity.GuardianSection;
 import com.john.guardian.db.rest.DataLoader;
-
 import java.util.List;
+import java.util.concurrent.Callable;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
+import static com.john.guardian.utils.LogUtils.LOGD;
 
 public class DataRepository
 {
@@ -24,7 +31,7 @@ public class DataRepository
         this.database = database;
         observableSections = new MediatorLiveData<>();
         observableSections.addSource(database.sectionDao().loadAllSections(),
-                new Observer<List<GuardianSection>>() {
+                new android.arch.lifecycle.Observer<List<GuardianSection>>() {
                     @Override
                     public void onChanged(@Nullable List<GuardianSection> sections) {
                         if(database.getDatabaseCreated().getValue() != null)
@@ -61,8 +68,10 @@ public class DataRepository
 
     public LiveData<List<GuardianContent>> loadAllContents(String sectionId)
     {
+
         return dataLoader.loadNewsContents(sectionId, "b71a5ddb-e819-4864-8006-944f614834b3");
     }
+
 
     public LiveData<GuardianSection> loadSection(final String sectionId)
     {

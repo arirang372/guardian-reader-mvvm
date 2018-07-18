@@ -21,10 +21,10 @@ import io.reactivex.annotations.NonNull;
                         parentColumns = "sectionName",
                         childColumns = "sectionId",
                         onDelete = ForeignKey.CASCADE) },
-          indices = {@Index(value = "sectionId")})
+             indices = {@Index(value = "sectionId")})
 public class GuardianContent implements IGuardianContent, Serializable
 {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @SerializedName("primary_id")
     @Expose
     private int id;
@@ -43,7 +43,7 @@ public class GuardianContent implements IGuardianContent, Serializable
 
     @SerializedName("sectionName")
     @Expose
-    private String sectionName;
+    private String sectionNameChild;
 
     @SerializedName("webPublicationDate")
     @Expose
@@ -110,12 +110,12 @@ public class GuardianContent implements IGuardianContent, Serializable
     }
 
     @Override
-    public String getSectionName() {
-        return sectionName;
+    public String getSectionNameChild() {
+        return sectionNameChild;
     }
 
-    public void setSectionName(String sectionName) {
-        this.sectionName = sectionName;
+    public void setSectionNameChild(String sectionNameChild) {
+        this.sectionNameChild = sectionNameChild;
     }
 
     @Override

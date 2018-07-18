@@ -5,7 +5,7 @@
 
     <data>
         <variable
-            name="isLoading"
+            name="isLoadingHappening"
             type="boolean" />
     </data>
 
@@ -43,6 +43,7 @@
                 app:mpb_progressStyle="horizontal"
                 app:mpb_showTrack="false"
                 app:mpb_useIntrinsicPadding="false"
+                app:visibleGone="@{isLoadingHappening}"
         />
 
         </android.support.design.widget.AppBarLayout>

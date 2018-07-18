@@ -16,9 +16,8 @@ import java.util.List;
 public class ContentListViewModel extends AndroidViewModel
 {
     private final String sectionId;
-
     private DataRepository repository;
-    private final LiveData<List<GuardianContent>> mObservableContents;
+    private LiveData<List<GuardianContent>> mObservableContents;
 
     public ContentListViewModel(@NonNull Application application, final String sectionId)
     {
@@ -26,7 +25,6 @@ public class ContentListViewModel extends AndroidViewModel
         this.sectionId = sectionId;
         this.repository = ((GuardianApplication) application).getRepository();
         this.mObservableContents = repository.loadAllContents(sectionId);
-
     }
 
 
@@ -48,12 +46,9 @@ public class ContentListViewModel extends AndroidViewModel
 
         private final String mSectionId;
 
-        private final DataRepository mRepository;
-
         public Factory(@NonNull Application application, String sectionId) {
             mApplication = application;
             mSectionId = sectionId;
-            mRepository = ((GuardianApplication) application).getRepository();
         }
 
         @Override

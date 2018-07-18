@@ -62,7 +62,7 @@ public class ContentRecyclerViewAdapter extends RecyclerView.Adapter<ContentRecy
                     GuardianContent oldSection = mContents.get(oldItemPosition);
 
                     return newSection.getId() == oldSection.getId()
-                            && Objects.equals(newSection.getSectionName(), oldSection.getSectionName() )
+                            && Objects.equals(newSection.getSectionNameChild(), oldSection.getSectionNameChild() )
                             && Objects.equals(newSection.getResourceName(), oldSection.getResourceName() )
                             && Objects.equals(newSection.getType(), oldSection.getType())
                             && Objects.equals(newSection.getWebTitle(), oldSection.getWebTitle() )

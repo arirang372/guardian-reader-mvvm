@@ -18,12 +18,14 @@ public interface GuardianContentDao
     @Query("SELECT * FROM contents where sectionId = :sectionId")
     LiveData<List<GuardianContent>> loadContents(String sectionId);
 
+    @Query("SELECT * FROM contents where sectionId = :sectionId")
+    List<GuardianContent> getAllContents(String sectionId);
+
     @Query("SELECT * FROM contents where id = :contentId")
     LiveData<GuardianContent> loadContent(int contentId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<GuardianContent> contents);
-
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertContent(GuardianContent content);

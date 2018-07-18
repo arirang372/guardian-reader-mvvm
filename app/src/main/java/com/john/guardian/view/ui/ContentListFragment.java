@@ -6,6 +6,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +49,15 @@ public class ContentListFragment extends Fragment
                 .get(ContentListViewModel.class);
 
         subscribeUi(contentListViewModel);
+
+        binding.refreshView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh()
+            {
+
+
+            }
+        });
     }
 
     private void subscribeUi(ContentListViewModel viewModel)
@@ -57,12 +67,13 @@ public class ContentListFragment extends Fragment
             public void onChanged(@Nullable List<GuardianContent> contents) {
                 if(contents != null)
                 {
-                    binding.loadingTv.setVisibility(View.GONE);
+                    binding.setIsLoadingBarOn(false);
                     binding.contentList.setVisibility(View.VISIBLE);
                     adapter.setContents(contents);
                 }
                 else
                 {
+                    binding.setIsLoadingBarOn(true);
                     binding.loadingTv.setVisibility(View.VISIBLE);
                     binding.contentList.setVisibility(View.GONE);
                 }
