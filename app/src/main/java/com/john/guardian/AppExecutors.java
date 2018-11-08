@@ -3,6 +3,8 @@ package com.john.guardian;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.util.Log;
+
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -18,6 +20,7 @@ public class AppExecutors
         this.mDiskIO = diskIO;
         this.mNetworkIO = networkIO;
         this.mMainThread = mainThread;
+        Log.d("Hello","asdas");
     }
 
     public AppExecutors() {
