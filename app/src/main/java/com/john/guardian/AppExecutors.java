@@ -20,7 +20,6 @@ public class AppExecutors
         this.mDiskIO = diskIO;
         this.mNetworkIO = networkIO;
         this.mMainThread = mainThread;
-        Log.d("Hello","asdas");
     }
 
     public AppExecutors() {
