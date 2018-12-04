@@ -52,12 +52,10 @@ public class MainActivity extends AppCompatActivity
                 if (sections != null)
                 {
                     binding.setIsLoadingHappening(false);
-                   // progressBar.setVisibility(View.INVISIBLE);
                     sectionSpinnerAdapter.setSections(sections);
                 }
                 else {
                     binding.setIsLoadingHappening(true);
-                    //progressBar.setVisibility(View.VISIBLE);
                 }
 
                 binding.executePendingBindings();

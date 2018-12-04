@@ -3,10 +3,8 @@ package com.john.guardian.viewmodel;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
-import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 import com.john.guardian.GuardianApplication;
 import com.john.guardian.db.DataRepository;
@@ -15,7 +13,7 @@ import com.john.guardian.db.entity.GuardianContent;
 
 public class ContentViewModel extends AndroidViewModel
 {
-    private LiveData<GuardianContent> contentLiveData = new MutableLiveData<>();
+    private LiveData<GuardianContent> contentLiveData;
     private final int contentId;
     private final DataRepository repository;
     public ContentViewModel(@NonNull Application application, final int contentId)

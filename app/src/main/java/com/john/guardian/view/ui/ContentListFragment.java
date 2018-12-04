@@ -54,7 +54,7 @@ public class ContentListFragment extends Fragment
             @Override
             public void onRefresh()
             {
-
+                binding.refreshView.setRefreshing(false);
 
             }
         });

@@ -6,19 +6,16 @@ import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
-import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import com.john.guardian.AppExecutors;
-import com.john.guardian.db.converter.DateConverter;
 import com.john.guardian.db.dao.GuardianContentDao;
 import com.john.guardian.db.dao.GuardianSectionDao;
 import com.john.guardian.db.entity.GuardianContent;
 import com.john.guardian.db.entity.GuardianSection;
 
 @Database(entities = {GuardianSection.class, GuardianContent.class}, version = 1, exportSchema = false)
-@TypeConverters(DateConverter.class)
 public abstract class AppDatabase extends RoomDatabase
 {
     private static AppDatabase instance;
@@ -59,7 +56,7 @@ public abstract class AppDatabase extends RoomDatabase
                                 @Override
                                 public void run()
                                 {
-                                    addDelay();
+                                   // addDelay();
                                     AppDatabase database = AppDatabase.getInstance(context, executors);
                                     database.setDatabaseCreated();
                                 }
@@ -68,12 +65,12 @@ public abstract class AppDatabase extends RoomDatabase
                     }).build();
     }
 
-    private static void addDelay() {
-        try {
-            Thread.sleep(4000);
-        } catch (InterruptedException ignored) {
-        }
-    }
+//    private static void addDelay() {
+//        try {
+//            Thread.sleep(4000);
+//        } catch (InterruptedException ignored) {
+//        }
+//    }
 
     private void updateDatabaseCreated(final Context context)
     {

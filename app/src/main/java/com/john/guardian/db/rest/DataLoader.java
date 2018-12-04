@@ -2,13 +2,7 @@ package com.john.guardian.db.rest;
 
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.persistence.room.TypeConverters;
-import android.databinding.ObservableField;
-import android.os.Handler;
-import android.os.Looper;
-
 import com.john.guardian.db.AppDatabase;
-import com.john.guardian.db.converter.DateConverter;
 import com.john.guardian.db.entity.GuardianContent;
 import com.john.guardian.db.entity.GuardianSection;
 import com.john.guardian.db.rest.models.contents.GuardianContentResponse;
@@ -16,26 +10,17 @@ import com.john.guardian.db.rest.models.contents.HttpContentResponse;
 import com.john.guardian.db.rest.models.sections.GuardianSectionResponse;
 import com.john.guardian.db.rest.models.sections.HttpSectionResponse;
 import com.john.guardian.utils.Utils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.operators.observable.ObservableFromCallable;
-import io.reactivex.internal.operators.observable.ObservableFromIterable;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -43,7 +28,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static com.john.guardian.utils.LogUtils.LOGD;
 
 
-@TypeConverters(DateConverter.class)
 public class DataLoader
 {
     private static final String BASE_URL = "https://content.guardianapis.com";

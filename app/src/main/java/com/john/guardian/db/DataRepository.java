@@ -2,22 +2,14 @@ package com.john.guardian.db;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.MutableLiveData;
+import android.content.Context;
 import android.support.annotation.Nullable;
+import com.john.guardian.R;
 import com.john.guardian.db.entity.GuardianContent;
 import com.john.guardian.db.entity.GuardianSection;
 import com.john.guardian.db.rest.DataLoader;
 import java.util.List;
-import java.util.concurrent.Callable;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-
-import static com.john.guardian.utils.LogUtils.LOGD;
 
 public class DataRepository
 {
@@ -25,10 +17,12 @@ public class DataRepository
     private final AppDatabase database;
     private MediatorLiveData<List<GuardianSection>> observableSections;
     private DataLoader dataLoader;
+    private Context context;
 
-    private DataRepository(final AppDatabase database)
+    private DataRepository(final AppDatabase database, final Context context)
     {
         this.database = database;
+        this.context = context;
         observableSections = new MediatorLiveData<>();
         observableSections.addSource(database.sectionDao().loadAllSections(),
                 new android.arch.lifecycle.Observer<List<GuardianSection>>() {
@@ -43,13 +37,13 @@ public class DataRepository
         dataLoader = new DataLoader(database);
     }
 
-    public static DataRepository getInstance(final AppDatabase database)
+    public static DataRepository getInstance(final AppDatabase database, final Context context)
     {
         synchronized (DataRepository.class)
         {
             if (instance == null)
             {
-                instance = new DataRepository(database);
+                instance = new DataRepository(database, context);
             }
 
             return instance;
@@ -63,13 +57,13 @@ public class DataRepository
 
     public LiveData<List<GuardianSection>> loadAllSections()
     {
-        return dataLoader.loadNewsSections("b71a5ddb-e819-4864-8006-944f614834b3");
+        return dataLoader.loadNewsSections(context.getString(R.string.api_key));
     }
 
     public LiveData<List<GuardianContent>> loadAllContents(String sectionId)
     {
 
-        return dataLoader.loadNewsContents(sectionId, "b71a5ddb-e819-4864-8006-944f614834b3");
+        return dataLoader.loadNewsContents(sectionId, context.getString(R.string.api_key));
     }
 
 

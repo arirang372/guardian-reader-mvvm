@@ -13,7 +13,6 @@ public class GuardianApplication extends Application
     public void onCreate()
     {
         super.onCreate();
-
         executors = new AppExecutors();
     }
 
@@ -24,7 +23,7 @@ public class GuardianApplication extends Application
 
     public DataRepository getRepository()
     {
-        return DataRepository.getInstance(getDatabase());
+        return DataRepository.getInstance(getDatabase(), this);
     }
 
 }

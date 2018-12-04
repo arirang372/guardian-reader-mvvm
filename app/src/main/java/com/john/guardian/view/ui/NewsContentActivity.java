@@ -80,7 +80,6 @@ public class NewsContentActivity extends AppCompatActivity
 
     public void hideProgress()
     {
-        try {
             if(progressBar != null)
             {
                 if (progressBar.getVisibility() != View.GONE) {
@@ -92,11 +91,7 @@ public class NewsContentActivity extends AppCompatActivity
                     });
                 }
             }
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
+
     }
 
 
