@@ -28,6 +28,8 @@ public interface GuardianContentDao
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertContent(GuardianContent content);
 
+    @Query("delete from contents")
+    void deleteAllContents();
 
     @Query("delete from contents where id = :contentId")
     void deleteContent(String contentId);

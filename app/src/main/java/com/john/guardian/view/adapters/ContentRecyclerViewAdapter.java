@@ -29,51 +29,8 @@ public class ContentRecyclerViewAdapter extends RecyclerView.Adapter<ContentRecy
 
     public void setContents(final List<? extends GuardianContent> contents)
     {
-        if(this.mContents == null)
-        {
-            this.mContents = contents;
-            notifyItemRangeInserted(0, contents.size());
-        }
-        else
-        {
-            DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
-                @Override
-                public int getOldListSize()
-                {
-                    return mContents.size();
-                }
-
-                @Override
-                public int getNewListSize()
-                {
-                    return contents.size();
-                }
-
-                @Override
-                public boolean areItemsTheSame(int oldItemPosition, int newItemPosition)
-                {
-                    return mContents.get(oldItemPosition).getId() == contents.get(newItemPosition).getId();
-                }
-
-                @Override
-                public boolean areContentsTheSame(int oldItemPosition, int newItemPosition)
-                {
-                    GuardianContent newSection = contents.get(newItemPosition);
-                    GuardianContent oldSection = mContents.get(oldItemPosition);
-
-                    return newSection.getId() == oldSection.getId()
-                            && Objects.equals(newSection.getSectionNameChild(), oldSection.getSectionNameChild() )
-                            && Objects.equals(newSection.getResourceName(), oldSection.getResourceName() )
-                            && Objects.equals(newSection.getType(), oldSection.getType())
-                            && Objects.equals(newSection.getWebTitle(), oldSection.getWebTitle() )
-                            && Objects.equals(newSection.getWebPublicationDate(), oldSection.getWebPublicationDate() )
-                            && Objects.equals(newSection.getWebUrl(), oldSection.getWebUrl()) ;
-                }
-            });
-
             mContents = contents;
-            result.dispatchUpdatesTo(this);
-        }
+            notifyDataSetChanged();
     }
 
     @NonNull

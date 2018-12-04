@@ -221,6 +221,7 @@ public class DataLoader
                 @Override
                 public List<GuardianContent> call() throws Exception
                 {
+                    database.contentDao().deleteAllContents();
                     database.contentDao().insertAll(contents);
                     return database.contentDao().getAllContents(sectionId);
                 }

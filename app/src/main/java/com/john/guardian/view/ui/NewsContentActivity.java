@@ -55,10 +55,14 @@ public class NewsContentActivity extends AppCompatActivity
     {
         viewModel.getObservableContent().observe(this, new Observer<GuardianContent>() {
             @Override
-            public void onChanged(@Nullable GuardianContent content) {
-                toolbar.setTitle(content.getWebTitle());
-                wv_main.getSettings().setJavaScriptEnabled(true);
-                wv_main.loadUrl(content.getWebUrl());
+            public void onChanged(@Nullable GuardianContent content)
+            {
+                if(content != null)
+                {
+                    toolbar.setTitle(content.getWebTitle());
+                    wv_main.getSettings().setJavaScriptEnabled(true);
+                    wv_main.loadUrl(content.getWebUrl());
+                }
             }
         });
 
