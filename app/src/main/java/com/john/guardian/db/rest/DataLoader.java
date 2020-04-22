@@ -2,6 +2,7 @@ package com.john.guardian.db.rest;
 
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.MutableLiveData;
+
 import com.john.guardian.db.AppDatabase;
 import com.john.guardian.db.entity.GuardianContent;
 import com.john.guardian.db.entity.GuardianSection;
@@ -10,16 +11,15 @@ import com.john.guardian.db.rest.models.contents.HttpContentResponse;
 import com.john.guardian.db.rest.models.sections.GuardianSectionResponse;
 import com.john.guardian.db.rest.models.sections.HttpSectionResponse;
 import com.john.guardian.utils.Utils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -28,11 +28,11 @@ import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+
 import static com.john.guardian.utils.LogUtils.LOGD;
 
 
-public class DataLoader
-{
+public class DataLoader {
     private static final String BASE_URL = "https://content.guardianapis.com";
     private final String TAG = this.getClass().getSimpleName();
     private GuadianService service;
@@ -40,8 +40,7 @@ public class DataLoader
     private String apiKey;
     private AppDatabase database;
 
-    public DataLoader(AppDatabase database)
-    {
+    public DataLoader(AppDatabase database) {
         Retrofit retrofit = new Retrofit.Builder()
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
@@ -52,30 +51,25 @@ public class DataLoader
         this.database = database;
     }
 
-    public MutableLiveData<List<GuardianSection>> loadNewsSections(String apiKey)
-    {
+    public MutableLiveData<List<GuardianSection>> loadNewsSections(String apiKey) {
         this.apiKey = apiKey;
         final MutableLiveData<List<GuardianSection>> sections = new MutableLiveData<>();
         service.getSectionNames("", apiKey)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(new Function<HttpSectionResponse, GuardianSectionResponse>()
-                {
+                .map(new Function<HttpSectionResponse, GuardianSectionResponse>() {
                     @Override
-                    public GuardianSectionResponse apply(HttpSectionResponse httpSectionResponse) throws Exception
-                    {
+                    public GuardianSectionResponse apply(HttpSectionResponse httpSectionResponse) throws Exception {
                         return httpSectionResponse.response;
                     }
                 })
-                .flatMap(new Function<GuardianSectionResponse, Observable<List<GuardianSection>>>()
-                {
+                .flatMap(new Function<GuardianSectionResponse, Observable<List<GuardianSection>>>() {
                     @Override
                     public Observable<List<GuardianSection>> apply(GuardianSectionResponse guardianSectionResponse) {
                         return Observable.just(guardianSectionResponse.results);
                     }
                 })
-                .map(new Function<List<GuardianSection>, List<GuardianSection>>()
-                {
+                .map(new Function<List<GuardianSection>, List<GuardianSection>>() {
                     @Override
                     public List<GuardianSection> apply(List<GuardianSection> sections) throws Exception {
                         return processNewsSections(sections);
@@ -88,23 +82,20 @@ public class DataLoader
                     }
 
                     @Override
-                    public void onNext(List<GuardianSection> guardianSections)
-                    {
+                    public void onNext(List<GuardianSection> guardianSections) {
                         LOGD(TAG, "Success - Section received ...");
                         sections.setValue(guardianSections);
 
                         new Thread(new Runnable() {
                             @Override
-                            public void run()
-                            {
+                            public void run() {
                                 processNewsSections(guardianSections);
                             }
                         }).start();
                     }
 
                     @Override
-                    public void onError(Throwable e)
-                    {
+                    public void onError(Throwable e) {
                         LOGD(TAG, "Fail - error occurred ...");
                     }
 
@@ -116,18 +107,14 @@ public class DataLoader
         return sections;
     }
 
-    private List<GuardianSection> processNewsSections(final List<GuardianSection> sections)
-    {
-        if(sections.isEmpty())
+    private List<GuardianSection> processNewsSections(final List<GuardianSection> sections) {
+        if (sections.isEmpty())
             return new ArrayList<>();
 
-        try
-        {
-            Callable<List<GuardianSection>> callable = new Callable<List<GuardianSection>>()
-            {
+        try {
+            Callable<List<GuardianSection>> callable = new Callable<List<GuardianSection>>() {
                 @Override
-                public List<GuardianSection> call() throws Exception
-                {
+                public List<GuardianSection> call() throws Exception {
                     database.sectionDao().insertAll(sections);
                     return database.sectionDao().getAllSections();
                 }
@@ -136,9 +123,7 @@ public class DataLoader
             Future<List<GuardianSection>> result = executor.submit(callable);
 
             return result.get();
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -146,8 +131,7 @@ public class DataLoader
     }
 
 
-    public  MutableLiveData<List<GuardianContent>> loadNewsContents(String sectionId, String apiKey)
-    {
+    public MutableLiveData<List<GuardianContent>> loadNewsContents(String sectionId, String apiKey) {
         this.apiKey = apiKey;
         final MutableLiveData<List<GuardianContent>> contents = new MutableLiveData<>();
         loadNextContents(sectionId, contents);
@@ -157,8 +141,7 @@ public class DataLoader
 
 
     @SuppressLint("CheckResult")
-    private void loadNextContents(final String sectionId, MutableLiveData<List<GuardianContent>> observableContents)
-    {
+    private void loadNextContents(final String sectionId, MutableLiveData<List<GuardianContent>> observableContents) {
         service.getNewsContents(sectionId, apiKey)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -174,11 +157,9 @@ public class DataLoader
                         return Observable.just(guardianContentResponse.results);
                     }
                 })
-                .map(new Function<List<GuardianContent>, List<GuardianContent>>()
-                {
+                .map(new Function<List<GuardianContent>, List<GuardianContent>>() {
                     @Override
-                    public List<GuardianContent> apply(List<GuardianContent> contents) throws Exception
-                    {
+                    public List<GuardianContent> apply(List<GuardianContent> contents) throws Exception {
                         return processNewsContents(sectionId, contents);
                     }
                 })
@@ -199,31 +180,25 @@ public class DataLoader
                     }
 
                     @Override
-                    public void onComplete()
-                    {
+                    public void onComplete() {
 
                     }
                 });
     }
 
 
-    private List<GuardianContent> processNewsContents(final String sectionId,  final List<GuardianContent> contents)
-    {
-        if(contents.isEmpty())
-           return new ArrayList<>();
+    private List<GuardianContent> processNewsContents(final String sectionId, final List<GuardianContent> contents) {
+        if (contents.isEmpty())
+            return new ArrayList<>();
 
-        try
-        {
-            for(GuardianContent c : contents)
-            {
-                c.setWebPublicationDate( utils.reformatDate(c.getWebPublicationDate()) );
+        try {
+            for (GuardianContent c : contents) {
+                c.setWebPublicationDate(utils.reformatDate(c.getWebPublicationDate()));
             }
 
-            Callable<List<GuardianContent>> callable = new Callable<List<GuardianContent>>()
-            {
+            Callable<List<GuardianContent>> callable = new Callable<List<GuardianContent>>() {
                 @Override
-                public List<GuardianContent> call() throws Exception
-                {
+                public List<GuardianContent> call() throws Exception {
                     database.contentDao().deleteAllContents();
                     database.contentDao().insertAll(contents);
                     return database.contentDao().getAllContents(sectionId);
@@ -233,9 +208,7 @@ public class DataLoader
             Future<List<GuardianContent>> result = executor.submit(callable);
 
             return result.get();
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
